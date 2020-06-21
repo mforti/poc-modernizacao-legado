@@ -32,13 +32,15 @@ public class MensagemResponse {
     	 this.payload = new String(context.getPayload())
                  .concat(context.getCodigoResposta().getCodigo());
 
+    	 System.out.println("Payload: " + this.payload);
     	
     	this.tipoTransacao = payload.substring(LayoutResponse.TIPO_TRANSACAO.getPosicaoInicial(), LayoutResponse.TIPO_TRANSACAO.getPosicaoFinal());
     	this.nsuTransacao = payload.substring(LayoutResponse.NSU_TRANSACAO.getPosicaoInicial(), LayoutResponse.NSU_TRANSACAO.getPosicaoFinal());
     	this.dataHoraTransacao = payload.substring(LayoutResponse.DATA_HORA_TRANSACAO.getPosicaoInicial(), LayoutResponse.DATA_HORA_TRANSACAO.getPosicaoFinal());
     	this.valorTransacao = payload.substring(LayoutResponse.VALOR_TRANSACAO.getPosicaoInicial(), LayoutResponse.VALOR_TRANSACAO.getPosicaoFinal());
     	this.produto =  payload.substring(LayoutResponse.PRODUTO.getPosicaoInicial(), LayoutResponse.PRODUTO.getPosicaoFinal());
-    	this.codigoResposta = payload.substring(LayoutResponse.CODIGO_RESPOSTA.getPosicaoInicial(), LayoutResponse.PRODUTO.getPosicaoFinal());
+    	this.setCodigoResposta(payload.substring(LayoutResponse.CODIGO_RESPOSTA.getPosicaoInicial(), LayoutResponse.CODIGO_RESPOSTA.getPosicaoFinal()));
+    
     }
 
 	public String getTipoTransacao() {
@@ -87,6 +89,14 @@ public class MensagemResponse {
 
 	public void setPayload(String payload) {
 		this.payload = payload;
+	}
+
+	public String getCodigoResposta() {
+		return codigoResposta;
+	}
+
+	public void setCodigoResposta(String codigoResposta) {
+		this.codigoResposta = codigoResposta;
 	}
 
    
