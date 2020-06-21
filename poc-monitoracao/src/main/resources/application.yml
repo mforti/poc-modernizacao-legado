@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: poc-monitoracao
+  profiles:
+    active: local
+
+  kafka:
+    producer:
+      batch-size: ${KAFKA_BATCH_SIZE:2049}
+      buffer-memory: ${KAFKA_BUFFER_MEMORY:33554432}
+      retries: 0
+      acks: ${ACKS:all}
+      properties:
+        max.block.ms: ${KAFKA_MAX_BLOCK_MS:600}
+        linger.ms: ${KAFKA_LINGER_MS:0}
+        request.timeout.ms: ${KAFKA_TIMEOUT:100}
+    bootstrap-servers: ${KAFKA_HOSTS:localhost:9092}
+
+  cloud:
+    consul:
+      host: ${CONSUL_SERVER_HOST:localhost}
+      port: ${CONSUL_SERVER_PORT:8500}
+      discovery:
+        instanceId: ${spring.application.name}:${random.value}
+        prefer-ip-address: true
+        tags: pod=${HOSTNAME:default},environment=${spring.profiles.active}
+        healthCheckPath: /actuator/health
+        healthCheckInterval: 20s
+
+monitoracao:
+  port: ${SERVER_PORT:7050}
+  topic: ${KAFKA_TOPIC:monitoracao-topic-v1}
+  factory:
+    connection:
+      backlog: 1000
+  message:
+    size:
+      max: 25000
+  async:
+    core-pool-size: 2
+    max-pool-capacity: 2
+    queue-capacity: 500
+    thread-name-prefix: MONITORACAO-ASYNC-
+ 
+server:
+  port: ${HTTP_PORT:8080}
+
+management:
+  metrics:
+    enable: 
+      monitoracao_response_time: true
+    distribution:
+      percentiles: 
+        monitoracao_response_time: 0.25, 0.5, 0.75, 1
+      percentiles-histogram: 
+        monitoracao_response_time: false
+      sla:
+        monitoracao_response_time: 10ms, 20ms, 30ms, 40ms, 50ms, 60ms, 70ms, 80ms, 90ms, 100ms, 200ms, 300ms, 400ms, 500ms, 750ms, 1000ms, 2000ms
+  endpoints:
+    web:
+      exposure:
+        include: 'info,health,prometheus'
+        
+---
+
+spring:
+  profiles: local
+  cloud:
+    consul:
+      enabled: false
